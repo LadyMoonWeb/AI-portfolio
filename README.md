@@ -13,5 +13,5 @@
 ---
 
 ## 📞 Контакты
-Telegram: [@yourhandle]  
-Email: yourmail@example.com
+Telegram: [@MoonJustice]  
+Email: aiymjan.tokosheva@gmail.com
