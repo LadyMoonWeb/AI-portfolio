@@ -1,17 +1,28 @@
-# excel_to_site.py
 import pandas as pd
 import requests
 
-EXCEL_FILE = "products.xlsx"
-API_URL = "https://demo-site.com/api/products"
+# Конфигурация API
+API_URL = "https://example.com/api/products"  # поменяй на реальный
+API_KEY = "your_api_key_here"
 
-df = pd.read_excel(EXCEL_FILE)
+# Загружаем данные из Excel
+df = pd.read_excel("products.xlsx")
 
+# Отправляем товары на сайт
 for _, row in df.iterrows():
-    payload = {
+    product_data = {
         "name": row["Name"],
         "price": row["Price"],
         "description": row["Description"]
     }
-    r = requests.post(API_URL, json=payload)
-    print(f"{row['Name']} → {r.status_code}")
+
+    response = requests.post(
+        API_URL,
+        json=product_data,
+        headers={"Authorization": f"Bearer {API_KEY}"}
+    )
+
+    if response.status_code == 201:
+        print(f"✅ {row['Name']} успешно загружен")
+    else:
+        print(f"❌ Ошибка при загрузке {row['Name']}: {response.text}")
