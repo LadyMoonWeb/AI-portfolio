@@ -1,0 +1,95 @@
+{
+  "name": "AI Customer Support Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "webhook": "/telegram/message",
+        "responseMode": "responseOnce",
+        "dataPath": "data"
+      },
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-telegram.telegramTrigger",
+      "typeVersion": 1,
+      "position": [100, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Check if it's a voice message, if so, call OpenAI Speech-to-Text\nif ($node[\"Telegram Trigger\"].json.message.voice) {\n  // TODO: Implement logic to download voice file from Telegram and send to OpenAI STT\n  // For example, you could use the 'HTTP Request' node to download the file\n  // and then the 'OpenAI' node to transcribe it.\n\n  return {\n    json: {\n      text: \"Обработка голосового сообщения... (Временно не реализовано)\"\n    }\n  };\n} else {\n  return {\n    json: {\n      text: $node[\"Telegram Trigger\"].json.message.text\n    }\n  };\n}\n"
+      },
+      "name": "Handle Voice/Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [300, 200]
+    },
+
+    {
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "prompt": "Ответь на следующий вопрос пользователя:\n\n{{ $json.text }}",
+        "temperature": 0.7,
+        "maxTokens": 200,
+        "topP": 1,
+        "frequencyPenalty": 0,
+        "presencePenalty": 0,
+        "bestOf": 1,
+        "n": 1,
+        "ignoreData": true
+      },
+      "name": "OpenAI Chat",
+      "type": "n8n-nodes-openai.openAI",
+      "typeVersion": 1,
+      "position": [500, 200],
+      "credentials": {
+        "openAIAPI": "YOUR_OPENAI_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Telegram Trigger\"].json.message.chat.id}}",
+        "text": "={{$json.choices[0].message.content}}"
+      },
+      "name": "Telegram Send Message",
+      "type": "n8n-nodes-telegram.telegramSendMessage",
+      "typeVersion": 1,
+      "position": [700, 200],
+      "credentials": {
+        "telegramApi": "YOUR_TELEGRAM_CREDENTIALS"
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Handle Voice/Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Voice/Text": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
