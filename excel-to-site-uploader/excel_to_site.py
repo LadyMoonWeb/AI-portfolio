@@ -1,13 +1,17 @@
 # excel_to_site.py
 import pandas as pd
-import json
+import requests
 
-def excel_to_json(excel_file, json_file):
-    df = pd.read_excel(excel_file)
-    data = df.to_dict(orient="records")
-    with open(json_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-    print(f"✅ Конвертация завершена! Результат: {json_file}")
+EXCEL_FILE = "products.xlsx"
+API_URL = "https://demo-site.com/api/products"
 
-if __name__ == "__main__":
-    excel_to_json("products.xlsx", "products.json")
+df = pd.read_excel(EXCEL_FILE)
+
+for _, row in df.iterrows():
+    payload = {
+        "name": row["Name"],
+        "price": row["Price"],
+        "description": row["Description"]
+    }
+    r = requests.post(API_URL, json=payload)
+    print(f"{row['Name']} → {r.status_code}")
