@@ -1,0 +1,80 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "upload",
+        "fieldName": "file"
+      },
+      "name": "Upload PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "command": "index",
+        "file": "/path/to/uploaded/document.pdf",
+        "index": "faiss_index"
+      },
+      "name": "Run Index Script",
+      "type": "n8n-nodes-base.exec",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "question": "Введите вопрос"
+      },
+      "name": "User Question",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "command": "ask",
+        "question": "{{$json[\"question\"]}}",
+        "index": "faiss_index"
+      },
+      "name": "Run Ask Script",
+      "type": "n8n-nodes-base.exec",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Upload PDF": {
+      "main": [
+        [
+          {
+            "node": "Run Index Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Index Script": {
+      "main": [
+        [
+          {
+            "node": "User Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Question": {
+      "main": [
+        [
+          {
+            "node": "Run Ask Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
