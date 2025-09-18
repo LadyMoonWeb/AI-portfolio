@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  faceswap:
+    build:
+      context: ./python/faceswap
+    volumes:
+      - ./data:/app/data
+      - ./models/DeepFaceLab:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  upscaler:
+    build:
+      context: ./python/upscaler
+    volumes:
+      - ./data:/app/data
+      - ./models/ESRGAN:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
