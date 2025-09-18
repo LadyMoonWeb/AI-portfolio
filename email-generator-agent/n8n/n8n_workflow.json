@@ -1,0 +1,169 @@
+{
+  "name": "AI Email Generator Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "path": "a1b2c3d4-e5f6-g7h8",
+        "options": {}
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        440,
+        300
+      ],
+      "webhookId": "a1b2c3d4-e5f6-g7h8"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "name",
+              "value": "Мария"
+            },
+            {
+              "name": "email",
+              "value": "maria.s@examplecorp.com"
+            },
+            {
+              "name": "company",
+              "value": "ExampleCorp"
+            },
+            {
+              "name": "position",
+              "value": "Руководитель отдела маркетинга"
+            },
+            {
+              "name": "interest",
+              "value": "оптимизация рекламных кампаний"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Mock CRM Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        640,
+        300
+      ],
+      "notes": "Эта нода имитирует получение данных из вашей CRM. В реальном сценарии здесь будет нода HubSpot, Pipedrive или HTTP Request к API вашей CRM."
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:5000/generate-email",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$json.name}}"
+            },
+            {
+              "name": "company",
+              "value": "={{$json.company}}"
+            },
+            {
+              "name": "position",
+              "value": "={{$json.position}}"
+            },
+            {
+              "name": "interest",
+              "value": "={{$json.interest}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Call AI Agent API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        860,
+        300
+      ],
+      "notes": "Если n8n в Docker, используйте http://host.docker.internal:5000"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "to": "={{$node[\"Set Mock CRM Data\"].json[\"email\"]}}",
+        "subject": "={{$json.subject}}",
+        "text": "={{$json.body}}",
+        "options": {}
+      },
+      "name": "Create Gmail Draft",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        300
+      ],
+      "credentials": {
+        "gmailApi": {
+          "id": "YOUR_GMAIL_CREDENTIALS_ID",
+          "name": "My Gmail Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Set Mock CRM Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Mock CRM Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Mock CRM Data": {
+      "main": [
+        [
+          {
+            "node": "Call AI Agent API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call AI Agent API": {
+      "main": [
+        [
+          {
+            "node": "Create Gmail Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
