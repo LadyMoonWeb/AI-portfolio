@@ -1,6 +1,0 @@
-
-## 📜 requirements.txt
-```txt
-pandas
-requests
-openpyxl
