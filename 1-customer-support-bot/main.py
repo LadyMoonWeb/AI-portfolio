@@ -1,9 +1,10 @@
 
-### `1-customer-support-bot/main.py`
+## 📑 main.py  
+
 ```python
 from transformers import pipeline
 
-# Заглушка для демонстрации
+# Заготовка для демо (бот-ассистент для FAQ)
 qa = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
 
 context = "Our support bot helps clients 24/7 by answering common questions."
