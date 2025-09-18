@@ -16,3 +16,5 @@
 3. Установи зависимости:
 ```bash
 pip install pandas openpyxl requests
+4. python excel_to_site.py
+
