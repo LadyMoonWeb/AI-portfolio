@@ -1,0 +1,6 @@
+# Flask для создания API
+Flask
+python-dotenv
+
+# OpenAI клиент
+openai
