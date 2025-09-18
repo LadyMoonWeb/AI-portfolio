@@ -1,0 +1,276 @@
+{
+  "name": "Telegram Price Alert",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "unit": "minutes",
+              "number": 30
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        300
+      ],
+      "webhookId": "a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "targetUrl",
+              "value": "https://www.example.com/products"
+            },
+            {
+              "name": "chatId",
+              "value": "YOUR_CHAT_ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python /path/to/your/scripts/telegram_price_alert.py \"{{$json[\"targetUrl\"]}}\""
+      },
+      "name": "Execute Python Scraper",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        840,
+        300
+      ],
+      "notes": "ВАЖНО: Укажите правильный путь к вашему .py файлу!\nНапример, если n8n в Docker, путь может быть /root/.n8n/scripts/telegram_price_alert.py"
+    },
+    {
+      "parameters": {
+        "value": "{{$json.stdout}}",
+        "options": {}
+      },
+      "name": "Parse JSON from stdout",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "{{$json.data}}",
+              "operation": "isEmpty"
+            }
+          ]
+        },
+        "combinator": "and"
+      },
+      "name": "IF: Scraper failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "aggregate",
+        "key": "link",
+        "options": {}
+      },
+      "name": "Get Previous Links",
+      "type": "n8n-nodes-base.staticData",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "compare",
+        "key1": "link",
+        "key2": "link",
+        "output": "nonMatching2",
+        "options": {}
+      },
+      "name": "Compare & Find New",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "key": "link",
+        "data": "={{$json.link}}",
+        "options": {}
+      },
+      "name": "Update Stored Links",
+      "type": "n8n-nodes-base.staticData",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Set Variables\"].json[\"chatId\"]}}",
+        "text": "=✨ *Найден новый товар!*\n\n*Название:* {{$json[\"title\"]}}\n*Ссылка:* {{$json[\"link\"]}}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Telegram Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIALS_ID",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Execute Python Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Python Scraper": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON from stdout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON from stdout": {
+      "main": [
+        [
+          {
+            "node": "IF: Scraper failed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Scraper failed?": {
+      "main": [
+        [
+          {
+            "node": "Get Previous Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Previous Links": {
+      "main": [
+        [
+          {
+            "node": "Compare & Find New",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Compare & Find New": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "Update Stored Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "1"
+}
