@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "upload-products",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "options": {},
+        "binaryPropertyName": "data",
+        "dataPropertyName": "json"
+      },
+      "id": "2",
+      "name": "Read Excel",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://example.com/api/products",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={ { \"name\": $json[\"Name\"], \"price\": $json[\"Price\"], \"description\": $json[\"Description\"] } }"
+      },
+      "id": "3",
+      "name": "Upload to Site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [750, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [[{ "node": "Read Excel", "type": "main", "index": 0 }]]
+    },
+    "Read Excel": {
+      "main": [[{ "node": "Upload to Site", "type": "main", "index": 0 }]]
+    }
+  }
+}
