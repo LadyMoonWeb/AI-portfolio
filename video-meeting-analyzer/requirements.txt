@@ -1,0 +1,10 @@
+# Core dependencies
+streamlit
+openai-whisper
+faiss-cpu # или faiss-gpu, если у вас есть подходящая видеокарта
+sentence-transformers
+ffmpeg-python
+
+# Utilities
+numpy
+pandas
