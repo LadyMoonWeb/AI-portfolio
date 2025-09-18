@@ -6,7 +6,7 @@
 ## 📌 Проекты
 1. [AI Customer Support Bot](./1-customer-support-bot)  
 2. [Video Meeting Analyzer](./video-meeting-analyzer)  
-3. [Email Generator Agent](./3-email-generator-agent)  
+3. [Email Generator Agent](./email-generator-agent)  
 4. [FaceSwap & Video Enhancement](./4-faceswap-video-enhancement)  
 5. [Document Q&A Bot](./5-document-qa-bot)  
 6. [Excel uploader](./excel-to-site-uploader)     
