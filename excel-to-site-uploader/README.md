@@ -33,3 +33,6 @@
 1. Установить зависимости:
 ```bash
 pip install -r requirements.txt
+2. Запустить загрузку:
+
+python excel_to_site.py
