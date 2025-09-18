@@ -1,12 +1,3 @@
-import pandas as pd
-
-data = {
-    "Name": ["Product 1", "Product 2"],
-    "Price": [100, 200],
-    "Description": ["Test description...", "Another description.."]
-}
-
-df = pd.DataFrame(data)
-df.to_excel("products.xlsx", index=False)
-
-print("✅ products.xlsx создан")
+git add products.xlsx
+git commit -m "Добавлен пример входного Excel-файла"
+git push
