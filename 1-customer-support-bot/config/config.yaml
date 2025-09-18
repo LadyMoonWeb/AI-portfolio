@@ -1,0 +1,6 @@
+#  Альтернатива .env, если предпочитаете YAML для конфигурации.
+#  Обратите внимание, что вам потребуется соответствующая библиотека для
+#  чтения YAML в ваших скриптах Python.
+telegram_bot_token: "YOUR_TELEGRAM_BOT_TOKEN"
+openai_api_key: "YOUR_OPENAI_API_KEY"
+openai_model_name: "gpt-3.5-turbo"
